@@ -1,0 +1,111 @@
+//  StringExtension.swift
+
+import UIKit
+
+extension String {
+    var isValidEmail: Bool {
+        NSPredicate(format: "SELF MATCHES %@", "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}").evaluate(with: self)
+    }
+    
+    var toBool: Bool {
+        if self.lowercased() == "true" {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var strNumberToStr2DecimalPlaces: String {
+        let doubleString = Double(self) ?? 0.0
+        return doubleString.toString2decimalPlaces
+    }
+    
+    var decodeBase64 : UIImage {
+        if let decData = Data(base64Encoded: self, options: .ignoreUnknownCharacters), self.count > 0 {
+            return UIImage(data: decData) ?? UIImage()
+        }
+        return UIImage()
+    }
+    
+    private static var digitsPattern = UnicodeScalar("0")..."9"
+    var digits: String {
+        return unicodeScalars.filter { String.digitsPattern ~= $0 }.string
+    }
+    
+    func toDate() -> Date? {
+        let formats = ["MM/dd/yyyy hh:mm:ss a",
+                       "yyyy-MM-dd hh:mm:ss a",
+                       "MMddyyyy",
+                       "yyyyMMdd",
+                       "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                       "MM/dd/yyyy",
+                       "yyyy-MM-dd'T'HH:mm:ss'Z'"]
+        var nReturnValDate: Date?
+        for format in formats {
+            nReturnValDate = getDateFromStringFormatter(format: format)
+            if nReturnValDate != nil {
+                return nReturnValDate
+            }
+        }
+        return nReturnValDate
+    }
+    
+    private func getDateFromStringFormatter(format: String) -> Date? {
+        let format = format
+        let date: String = self
+        let isoDate = date
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        guard let date = dateFormatter.date(from: isoDate) else { return nil}
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .hour,.minute,.second], from: date)
+        guard let finalDate = calendar.date(from:components) else  { return nil}
+        return finalDate
+    }
+    
+    func currencyFormatting() -> String {
+        if let value = Double(self) {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            formatter.maximumFractionDigits = 2
+            formatter.minimumFractionDigits = 2
+            if let str = formatter.string(for: value) {
+                return str
+            }
+        }
+        return ""
+    }
+    
+    func index(from: Int) -> Index {
+        return self.index(startIndex, offsetBy: from)
+    }
+    
+    func substring(from: Int) -> String {
+        let fromIndex = index(from: from)
+        return String(self[fromIndex...])
+    }
+    
+    func substring(to: Int) -> String {
+        let toIndex = index(from: to)
+        return String(self[..<toIndex])
+    }
+    
+    func substring(with r: Range<Int>) -> String {
+        let startIndex = index(from: r.lowerBound)
+        let endIndex = index(from: r.upperBound)
+        return String(self[startIndex..<endIndex])
+    } // TO USE substring()
+    /*
+     let str = "Hello, playground"
+     print(str.substring(from: 7))         // playground
+     print(str.substring(to: 5))           // Hello
+     print(str.substring(with: 7..<11))    // play
+     */
+    
+    func hideTextAndShowLastCharacters(_ numberOfLastCharToShow: Int) -> String {
+        let start = self.startIndex
+        let end = self.index(self.endIndex, offsetBy: -numberOfLastCharToShow)
+        let result = self.replacingCharacters(in: start..<end, with: "******")
+        return result
+    }
+}
