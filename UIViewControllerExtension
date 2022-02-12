@@ -1,0 +1,284 @@
+
+//  ExtenstionUIViewController.swift
+
+
+import Foundation
+import UIKit
+import DropDown
+import JGProgressHUD
+import StepIndicator
+import MaterialComponents.MaterialTextControls_FilledTextAreasTheming
+import MaterialComponents.MaterialTextControls_FilledTextFieldsTheming
+import MaterialComponents.MaterialTextControls_OutlinedTextAreasTheming
+import MaterialComponents.MaterialTextControls_OutlinedTextFieldsTheming
+ 
+extension UIViewController {
+    // MARK: - OverrideUserInterfaceStyle
+    func overrideUserInterfaceStyleToLightMode() {
+        // Supported only Light mode
+        if #available(iOS 13.0, *) {
+            overrideUserInterfaceStyle = .light
+        }
+    }
+    
+    // MARK: - SecureTextFiled
+    func updateSecureTextFiled(textField: UITextField, button: UIButton) {
+        textField.isSecureTextEntry.toggle()
+        if textField.isSecureTextEntry == true {
+            button.setImage(UIImage(systemName: RMSstring.imgBtnEyeHideText), for: .normal)
+        } else {
+            button.setImage(UIImage(systemName: RMSstring.imgBtnEyeUnhideText), for: .normal)
+        }
+    }
+    
+    func setupDefaultsSecureTextFiledWhenLoadView(textField: UITextField, button: UIButton) {
+        textField.isSecureTextEntry = true
+        button.setImage(UIImage(systemName: RMSstring.imgBtnEyeHideText), for: .normal)
+    }
+    
+    // MARK: - Error TextFileds
+    func setErrorTextFiledOnLeadingView(textFiled: MDCFilledTextField) {
+        textFiled.leadingViewMode = .always
+        textFiled.leadingView = getRedExclamationMarkImageView()
+        textFiled.setUnderlineColor(.red, for: .editing)
+        textFiled.setUnderlineColor(.red, for: .normal)
+        textFiled.setUnderlineColor(.red, for: .disabled)
+        textFiled.setLeadingAssistiveLabelColor(.red, for: .normal)
+        textFiled.setLeadingAssistiveLabelColor(.red, for: .editing)
+        textFiled.setLeadingAssistiveLabelColor(.red, for: .disabled)
+        textFiled.leadingAssistiveLabel.font = .rms8?.bold()
+        textFiled.leadingAssistiveLabel.numberOfLines = 0
+    }
+    
+    func setDefaultTextFiledOnLeadingView(textFiled: MDCFilledTextField) {
+        textFiled.leadingViewMode =  .never
+        textFiled.setUnderlineColor((.rmsGray ?? .systemGray5), for: .editing)
+        textFiled.setUnderlineColor((.rmsGray ?? .systemGray5), for: .normal)
+        textFiled.setUnderlineColor((.rmsGray ?? .systemGray5), for: .disabled)
+    }
+    
+    func setErrorTextFiledOnTrailingView(textFiled: MDCFilledTextField) {
+        textFiled.trailingViewMode = .always
+        textFiled.trailingView = getRedExclamationMarkImageView()
+        textFiled.setUnderlineColor(.red, for: .editing)
+        textFiled.setUnderlineColor(.red, for: .normal)
+        textFiled.setUnderlineColor(.red, for: .disabled)
+        textFiled.setTrailingAssistiveLabelColor(.red, for: .normal)
+        textFiled.setTrailingAssistiveLabelColor(.red, for: .editing)
+        textFiled.setTrailingAssistiveLabelColor(.red, for: .disabled)
+        textFiled.trailingAssistiveLabel.font = .rms8?.bold()
+        textFiled.trailingAssistiveLabel.numberOfLines = 0
+    }
+    
+    func setDefaultTextFiledOnTrailingView(textFiled: MDCFilledTextField) {
+        textFiled.trailingViewMode =  .never
+        textFiled.setUnderlineColor((.rmsGray ?? .systemGray5), for: .editing)
+        textFiled.setUnderlineColor((.rmsGray ?? .systemGray5), for: .normal)
+        textFiled.setUnderlineColor((.rmsGray ?? .systemGray5), for: .disabled)
+    }
+    
+    // MARK: - Update Hide and Unhide Password UI
+    func updateTextFiledSecureTextEntryAndEyeButton(textFiled: UITextField, button: UIButton) {
+        textFiled.isSecureTextEntry.toggle()
+        if textFiled.isSecureTextEntry == true {
+            button.setImage(UIImage(systemName: RMSstring.imgBtnEyeHideText), for: .normal)
+        } else {
+            button.setImage(UIImage(systemName: RMSstring.imgBtnEyeUnhideText), for: .normal)
+        }
+    }
+    
+    // MARK: - Get UIImageView
+    func getRedExclamationMarkImageView() -> UIImageView {
+        let image = UIImage(systemName: RMSstring.imgExclamationMark)
+        let imageView = UIImageView(image: image!)
+        imageView.setImageColor(color: (.rmsRed ?? .systemRed))
+        return imageView
+    }
+    
+    func getGraySearchImageView() -> UIImageView {
+        let image = UIImage(systemName: RMSstring.imgSearch)
+        let imageView = UIImageView(image: image!)
+        imageView.setImageColor(color: (.rmsGray ?? .systemGray))
+        return imageView
+    }
+    
+    func getGrayDollarImageView() -> UIImageView {
+        let image = #imageLiteral(resourceName: "7currency-usd")
+        let imageView = UIImageView(image: image)
+        imageView.setImageColor(color: (.rmsGray ?? .systemGray))
+        return imageView
+    }
+    
+    // MARK: - Image Size
+    func imageWithImage(image: UIImage, scaledToSize newSize: CGSize) -> UIImage {
+        UIGraphicsBeginImageContext(newSize)
+        image.draw(in: CGRect(x: 0 ,y: 0 ,width: newSize.width ,height: newSize.height))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!.withRenderingMode(.alwaysOriginal)
+    }
+    
+    // MARK: - String Images
+    func convertImageToBase64String(image : UIImage ) -> String {
+        let strBase64 =  image.pngData()?.base64EncodedString()
+        return strBase64 ?? ""
+    }
+    
+    func decodeBase64(toImage strEncodeData: String?) -> UIImage {
+        if let newStrEncodeData = strEncodeData {
+            if let decData = Data(base64Encoded: newStrEncodeData, options: .ignoreUnknownCharacters), newStrEncodeData.count > 0 {
+                return UIImage(data: decData) ?? UIImage()
+            }
+        }
+        return UIImage()
+    }
+    
+    // MARK: - ActivityIndicator
+    func startSpinning(with spinner: JGProgressHUD, text: String) {
+        DispatchQueue.main.async {
+            spinner.style = .light
+            spinner.textLabel.text = text
+            spinner.textLabel.textColor = .systemGray
+            spinner.textLabel.font = UIFont(name: "CourierNewPSMT", size: 12)
+            spinner.detailTextLabel.textColor = .systemGray
+            spinner.detailTextLabel.font = UIFont(name: "CourierNewPSMT", size: 10)
+            spinner.backgroundColor = .rmsBlueLightBG
+            spinner.shadow  = JGProgressHUDShadow(color:  .systemGray, offset: .zero, radius: 6.0, opacity: 0.2)
+            spinner.position = .center
+            spinner.show(in: self.view, animated: true)
+        }
+    }
+    
+    func stopSpinningWithSuccessfulStatus(with spinner: JGProgressHUD)  {
+        DispatchQueue.main.async {
+            spinner.textLabel.text = "Success"
+            spinner.detailTextLabel.text = nil
+            spinner.indicatorView = JGProgressHUDSuccessIndicatorView()
+        }
+    }
+    
+    func stopSpinning(with spinner: JGProgressHUD) {
+        DispatchQueue.main.async {
+            spinner.dismiss()
+        }
+    }
+    
+    func stopSpinningWithDelay(with spinner: JGProgressHUD) {
+        DispatchQueue.main.async {
+            spinner.dismiss(afterDelay: 10, animated: true)
+        }
+    }
+    
+    // MARK: - UI TextField
+    func checkMaxLength(textField: UITextField!, maxLength: Int) {
+        if textField.text!.count > maxLength {
+            textField.deleteBackward()
+        }
+    }
+    
+    // MARK: - Date And Time
+    func toDate(withFormat format: String = "MM/dd/yyyy hh:mm:ss a", date: String)-> Date? {
+        let isoDate = date
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        guard let date = dateFormatter.date(from: isoDate) else { return nil }
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .hour,.minute,.second], from: date)
+        let finalDate = calendar.date(from:components)
+        return finalDate
+    }
+    
+    func changeDateToCTStimeZone(_ date: Date) -> Date? {
+        let fromCurrentTimeZone = TimeZone.current
+        guard let toCSTtimeZone = TimeZone(abbreviation: "CST") else {return nil}
+        let sourceOffset = fromCurrentTimeZone.secondsFromGMT(for: date)
+        let destinationOffset = toCSTtimeZone.secondsFromGMT(for: date)
+        let timeInterval = TimeInterval(destinationOffset - sourceOffset)
+        return Date(timeInterval: timeInterval, since: date)
+    }
+    
+    // MARK: - Alert To User
+    func presentAlertToUserAndGoToTextField(titleAlert: String, messageAlert: String, textFiled: UITextField) {
+        let tf = textFiled
+        var alertController = UIAlertController()
+        if UIDevice.isPhone {
+            alertController = UIAlertController(title: titleAlert, message: messageAlert, preferredStyle: .actionSheet)
+        } else {
+            alertController = UIAlertController(title: titleAlert, message: messageAlert, preferredStyle: .alert)
+        }
+        let dismissAction = UIAlertAction(title: "Ok", style: .cancel) { action in
+            tf.becomeFirstResponder()
+            tf.selectAll(nil)
+        }
+        alertController.addAction(dismissAction)
+        present(alertController, animated: true)
+    }
+    
+    func presentAlertActionSheetToUser(titleAlert: String, messageAlert: String) {
+        var alertController = UIAlertController()
+        if UIDevice.isPhone {
+            alertController = UIAlertController(title: titleAlert, message: messageAlert, preferredStyle: .actionSheet)
+        } else {
+            alertController = UIAlertController(title: titleAlert, message: messageAlert, preferredStyle: .alert)
+            
+        }
+        let dismissAction = UIAlertAction(title: "Ok", style: .cancel)
+        alertController.addAction(dismissAction)
+        present(alertController, animated: true)
+    }
+    
+    func presentAlertToUser(titleAlert: String, messageAlert: String) {
+        var alertController = UIAlertController()
+        alertController = UIAlertController(title: titleAlert, message: messageAlert, preferredStyle: .alert)
+        let dismissAction = UIAlertAction(title: "Ok", style: .cancel)
+        alertController.addAction(dismissAction)
+        present(alertController, animated: true)
+    }
+    
+    // MARK: - Hide KeyBoard
+    func setupToHideKeyboardOnTapOnView(){
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(
+            target: self,
+            action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    // MARK: - DropDown
+    func setupDropDown(with dropDown: DropDown, textField: UITextField, parentView: UIView) {
+        let vwDropDown: UIView = {
+            let view = UIView()
+            return view
+        }()
+        parentView.addSubview(vwDropDown)
+        dropDown.anchorView = vwDropDown
+        vwDropDown.anchor(top: parentView.bottomAnchor, bottom: nil, leading: parentView.leadingAnchor, trailing: parentView.trailingAnchor, paddingTop: -5, paddingBottom: 0, paddingLeft: 0, paddingRight:0)
+        dropDown.bottomOffset = CGPoint(x: 0, y: (dropDown.anchorView?.plainView.bounds.height)!)
+        dropDown.topOffset = CGPoint(x: 0, y: (dropDown.anchorView?.plainView.bounds.height)!)
+        let dropDrowWidth = textField.frame.size.width * 0.8
+        dropDown.width = dropDrowWidth
+        dropDown.direction = .bottom
+    }
+    
+    func updateDropDownDataSource(with dropDown: DropDown, dataSource: [String]) {
+        dropDown.dataSource = dataSource
+    }
+    
+    // MARK: - Segue to Somewhere on the ViewControllers
+    func goToUnderContructionVC() {
+        let storyboard = UIStoryboard(name: RMSstring.homeStoryBoard, bundle: nil)
+        let  vc = storyboard.instantiateViewController(identifier: "UnderContructionNVStoryboardID")
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func goToLoginVC() {
+        let storyboard = UIStoryboard(name: RMSstring.loginViewStoryBoard, bundle: nil)
+        let  vc = storyboard.instantiateViewController(identifier: "LoginNVStoryboardID")
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: false, completion: nil)
+    }
+}
