@@ -1,0 +1,3 @@
+extension Sequence where Iterator.Element == UnicodeScalar {
+    var string: String { return String(String.UnicodeScalarView(self)) }
+}
