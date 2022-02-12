@@ -1,0 +1,17 @@
+//  IntExtension.swift
+
+import Foundation
+
+extension Int {
+    var toString: String {
+        return String(self)
+    }
+    
+    var toStringCurrentFormat: String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale.current
+        formatter.numberStyle = .currency
+        let amount = formatter.string(from: NSNumber(value: self))
+        return amount ?? "$0"
+    }
+}
